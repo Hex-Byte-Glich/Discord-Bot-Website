@@ -102,19 +102,6 @@ try {
             const args = messageContent.slice(actualPrefix.length).trim().split(/ +/);
             let commandName = args.shift().toLowerCase();
 
-          //  let userData = await getUser(message.author.id);
-          //  if (!userData) {
-          //      userData = new User({
-          //          userId: message.author.id,
-          //          balance: 50000
-            //    });
-           //     await userData.save();
-           // }
-           // if (!userData.username) { userData.username = `${message.author.username}`; };
-
-            //leveling(message);
-            //prem(message);
-
             if (commandName == 'leaveserver') {
 
                 const admin = getAdmin.get(commandName) || getAdmin.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));

@@ -1,4 +1,4 @@
-const { Client, IntentsBitField, Collection } = require('discord.js');
+const { Client, IntentsBitField, Collection, ActivityType  } = require('discord.js');
 require('dotenv').config();
 const express = require('express');
 const { REST } = require('@discordjs/rest');
@@ -28,12 +28,54 @@ const client = new Client({
 
 client.cluster = new ClusterClient(client);
 
-client.once('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+const twitchStreamUrl = 'https://www.twitch.tv/loadingbotfun';
+
+client.on('ready', async () => {
+    console.log(`${client.user.tag} is online!`);
+    //surpriseDrop.startAutoDrops(client);
+    //client.user.setPresence({
+        //status: 'invisible', // This sets the bot to appear offline
+        //activities: [] // No activities to display
+    //});
+
+    // Function to set presence with dynamic server and member counts
+    async function updatePresence() {
+        const totalServers = client.guilds.cache.size;
+        const totalMembers = client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0);
+
+
+        const statuses = [
+            { status: 'dnd', activity: { type: ActivityType.Streaming, name: `${totalServers} Server!`, url: twitchStreamUrl } },
+        ];
+
+        // Select a random status from the list
+        const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+        
+        client.user.setPresence({
+            status: randomStatus.status,
+            activities: [randomStatus.activity]
+        });
+    }
+
+    // Update presence on startup
+    await updatePresence();
+
+    // Update presence every 10 minutes
+    setInterval(updatePresence, 10 * 60 * 1000);
+
+    // Call detectMessage after the client is ready
+    if (typeof detectMessage === 'function') {
+        detectMessage(client);
+    } else {
+        console.error('detectMessage is not a function');
+    }
+
+    //start auto drop cash
+    
 });
 
 //running bot to online
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN_BOT);
 
 client.commands = new Collection();
 
@@ -66,7 +108,7 @@ fs.readdirSync(commandFolderPath).forEach(file => {
         // Log the commands for debugging
         // console.log('Commands to be registered:', commands);     
 
-        const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+        const rest = new REST({ version: '10' }).setToken(process.env.TOKEN_BOT);
         
         // Register commands for a specific guild
         await rest.put(
@@ -79,19 +121,6 @@ fs.readdirSync(commandFolderPath).forEach(file => {
         console.error(chalk.red.bold('ERROR: ') + 'Failed to refresh application commands:', error);
     }
 })();
-
-client.on('ready', async () => {
-
-   // console.log(`Logged in as ${client.user.tag}!`);
-    console.log(`BOT PREFIX: ${prefix}`)
-    
-    if (typeof detectMessage === 'function') {
-        detectMessage(client);
-    } else {
-        console.error('detectMessage is not a function');
-    }
-    
-});
 
 //dashboard to run website
 const app = express();
