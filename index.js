@@ -1,4 +1,4 @@
-const { Client, IntentsBitField, Collection, ActivityType  } = require('discord.js');
+const { Client, IntentsBitField, Collection, ActivityType, EmbedBuilder } = require('discord.js');
 require('dotenv').config();
 const express = require('express');
 const { REST } = require('@discordjs/rest');
@@ -151,10 +151,16 @@ client.once('ready', () => {
         const guilds = client.guilds.cache.map(guild => ({
             name: guild.name,
             id: guild.id,
-            memberCount: guild.memberCount
+            memberCount: guild.memberCount,
+            prefix: guild.prefix,
+            moderatorRole: "Admin",
+            moderatorPermissions: ["ban", "kick"],
+            welcomeChannel: '#welcome',
+            leaveChannel: "#goodbye"
         }));
 
-        
+        guilds.moderatorPermissions = guilds.moderatorPermissions || [];
+
         res.render('index', { clientUserTag: client.user.tag, guilds: guilds, botCategories });
     });
 
@@ -163,21 +169,33 @@ client.once('ready', () => {
     app.get('/send-message/:guildId', (req, res) => {
         const guildId = req.params.guildId;
         const guild = client.guilds.cache.get(guildId);
+        
         if (!guild) {
             return res.status(404).json({ message: 'Guild not found' });
         }
     
-       
+        // Retrieve the guild settings
         const settings = guildSettings[guildId];
         if (!settings || !settings.welcomeMessage) {
             return res.status(400).json({ message: 'No welcome message set for this guild' });
         }
     
-        
-        guild.systemChannel.send(settings.welcomeMessage)
+        // Get the system channel or fallback to a custom channel
+        const channel = guild.systemChannel || guild.channels.cache.get(settings.welcomeChannel);
+    
+        if (!channel) {
+            return res.status(400).json({ message: 'No valid channel found to send the welcome message' });
+        }
+    
+        // Try sending the message to the selected channel
+        channel.send(settings.welcomeMessage)
             .then(() => res.json({ message: 'Message sent successfully!' }))
-            .catch(err => res.status(500).json({ message: 'Error sending message', error: err }));
+            .catch(err => {
+                console.error(err);
+                res.status(500).json({ message: 'Error sending message', error: err });
+            });
     });
+    
 
     app.post('/manage-server', (req, res) => {
         const guildId = req.body.guildId;
@@ -186,56 +204,180 @@ client.once('ready', () => {
             return res.status(404).send('Server not found');
         }
     
+        const currentSettings = guildSettings[guildId] || {};
+
+    // Render the EJS template and pass the guild data
+    res.render('manage-server', {
+        guild: guild,
+        welcomeChannel: currentSettings.welcomeChannel,
+        leaveChannel: currentSettings.leaveChannel,
+        welcomeMessage: currentSettings.welcomeMessage,
+        leaveMessage: currentSettings.leaveMessage
+    });
        
-        res.render('manage-server', { guild });
+        
     });
-
-
-   app.post('/manage-commands', (req, res) => {
-    const commandName = req.body.commandName;
-    console.log(`Managing command: ${commandName}`);
-    // You can add logic here to manage the selected command
-    res.redirect('/');
-})
     
 
-    app.get('/manage-server/:guildId', (req, res) => {
-        const guildId = req.params.guildId;
-        const guild = client.guilds.cache.get(guildId);
-    
-        if (!guild) {
-            return res.status(404).send('Guild not found');
-        }
-    
-        res.render('manage-server', { guild });
+app.get('/manage-server/:guildId', async (req, res) => {
+    const guildId = req.params.guildId;
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) {
+        return res.status(404).send('Guild not found');
+    }
+
+   // console.log(channels);  // Debugging line
+
+    // Render the page with the guild details and channels
+    res.render('manage-server', {
+        guild: guild
     });
+});
+
+
+
 
     let guildSettings = {}; 
 
     app.post('/update-settings', (req, res) => {
-        const { prefix, welcomeMessage, guildId } = req.body;
-    
+        const { prefix, welcomeMessage, welcomeChannel, leaveChannel, guildId } = req.body;
+        
+        // Check if all required fields are present
+        if (!guildId) {
+            return res.status(400).send('Guild ID is required.');
+        }
+        
+        // Fetch the guild by ID
         const guild = client.guilds.cache.get(guildId);
         if (!guild) {
             return res.status(404).send('Guild not found');
         }
     
-        // Save the settings in memory (you can modify this to store in a database or cache)
+        // Validate if the provided channels exist in the guild
+        if (welcomeChannel && !guild.channels.cache.has(welcomeChannel)) {
+            return res.status(400).send('Invalid welcome channel ID.');
+        }
+        if (leaveChannel && !guild.channels.cache.has(leaveChannel)) {
+            return res.status(400).send('Invalid leave channel ID.');
+        }
+        
+        // Save the settings in memory (or to a database)
         guildSettings[guildId] = {
-            prefix: prefix || guildSettings[guildId]?.prefix,
-            welcomeMessage: welcomeMessage || guildSettings[guildId]?.welcomeMessage
+            prefix: prefix || guildSettings[guildId]?.prefix,  // Default to current setting if not provided
+            welcomeMessage: welcomeMessage || guildSettings[guildId]?.welcomeMessage,
+            welcomeChannel: welcomeChannel || guildSettings[guildId]?.welcomeChannel,
+            leaveChannel: leaveChannel || guildSettings[guildId]?.leaveChannel,
         };
-    
+        
         console.log(`Updated settings for guild: ${guild.name}`);
-        console.log(`Prefix: ${prefix}`);
-        console.log(`Welcome Message: ${welcomeMessage}`);
-    
-        // Redirect to the manage-server page
+        console.log(`Prefix: ${prefix || 'No change'}`);
+        console.log(`Welcome Message: ${welcomeMessage || 'No change'}`);
+        console.log(`Welcome Channel: ${welcomeChannel || 'No change'}`);
+        console.log(`Leave Channel: ${leaveChannel || 'No change'}`);
+        
+        // Redirect to the manage-server page with the updated settings
         res.redirect(`/manage-server/${guildId}`);
     });
+
+    let guildSettingsd = {}; // To store guild settings in memory
+    app.post('/set-welcome-leave', (req, res) => {
+        const { welcomeChannel, leaveChannel, guildId, welcomeMessage, leaveMessage } = req.body;
+        
+        // Check if all required fields are present
+        if (!guildId) {
+            return res.status(400).send('Guild ID is required.');
+        }
+        
+        // Fetch the guild by ID
+        const guild = client.guilds.cache.get(guildId);
+        if (!guild) {
+            return res.status(404).send('Guild not found');
+        }
+    
+        // Validate if the provided channels exist in the guild
+        if (welcomeChannel && !guild.channels.cache.has(welcomeChannel)) {
+            return res.status(400).send('Invalid welcome channel ID.');
+        }
+        if (leaveChannel && !guild.channels.cache.has(leaveChannel)) {
+            return res.status(400).send('Invalid leave channel ID.');
+        }
+        
+        // Save the settings in memory (or to a database)
+        guildSettingsd[guildId] = {
+            welcomeChannel: welcomeChannel || guildSettings[guildId]?.welcomeChannel,
+            leaveChannel: leaveChannel || guildSettings[guildId]?.leaveChannel,
+            welcomeMessage: welcomeMessage || guildSettings[guildId]?.welcomeMessage || 'Welcome {user} to the server!',
+            leaveMessage: leaveMessage || guildSettings[guildId]?.leaveMessage || 'Goodbye {user}, we will miss you!',
+        };
+    
+        console.log(`Welcome Channel: ${welcomeChannel || 'No change'}`);
+        console.log(`Leave Channel: ${leaveChannel || 'No change'}`);
+        console.log(`Welcome Message: ${welcomeMessage || 'No change'}`);
+        console.log(`Leave Message: ${leaveMessage || 'No change'}`);
+        
+        // Redirect to the manage-server page with the updated settings
+        res.redirect(`/manage-server/${guildId}`);
+    });
+    
+    client.on('guildMemberAdd', member => {
+        const guildId = member.guild.id;
+        const settings = guildSettingsd[guildId];  // Assuming guildSettingsd contains the settings
+    
+        if (settings && settings.welcomeChannel) {
+            const channel = member.guild.channels.cache.get(settings.welcomeChannel);
+    
+            if (channel) {
+                // Create the welcome embed
+                const welcomeEmbed = new EmbedBuilder()
+                    .setColor('#00FF00') // Set the embed color (green)
+                    .setTitle('Welcome to the Server!')
+                    .setDescription(`Welcome **${member.user.username}**! We're happy to have you here.`)
+                    .setFooter({ text: 'Enjoy your stay!' })
+                    .setTimestamp();
+    
+                // If there's a custom welcome message, add it to the embed
+              //  if (settings.welcomeMessage) {
+             //       welcomeEmbed.addFields({ name: 'Message', value: settings.welcomeMessage.replace('{user}', member.user.username) });
+              //  }
+    
+                // Send the embed
+                channel.send({ embeds: [welcomeEmbed] });
+            }
+        }
+    });
+    
+    // Handle member leaving the server
+    client.on('guildMemberRemove', member => {
+        const guildId = member.guild.id;
+        const settings = guildSettingsd[guildId];
+    
+        if (settings && settings.leaveChannel) {
+            const channel = member.guild.channels.cache.get(settings.leaveChannel);
+    
+            if (channel) {
+                // Create the leave embed
+                const leaveEmbed = new EmbedBuilder()
+                    .setColor('#FF0000') // Set the embed color (red)
+                    .setTitle('Goodbye!')
+                    .setDescription(`Goodbye **${member.user.username}**. We're sorry to see you go.`)
+                    .setFooter({ text: 'We hope to see you again!' })
+                    .setTimestamp();
+    
+                // If there's a custom leave message, add it to the embed
+               // if (settings.leaveMessage) {
+                 //   leaveEmbed.addFields({ name: 'Message', value: settings.leaveMessage.replace('{user}', member.user.username) });
+               // }
+    
+                // Send the embed
+                channel.send({ embeds: [leaveEmbed] });
+            }
+        }
+    });
+    
 
     // Start the server after the bot is ready
     app.listen(3000, () => {
         console.log('Web server is running on http://localhost:3000');
     });
 });
+

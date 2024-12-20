@@ -1,11 +1,23 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Server - <%= guild.name %></title>
-    <link rel="stylesheet" href="/styles.css">
+    <title>Bot Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/manager.css">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="https://files.catbox.moe/hurbtv.jpg" type="image/x-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Ionicons (for icons) -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </head>
 
 <body>
@@ -14,7 +26,7 @@
     <header>
         <div class="container">
             <a href="#" class="logo">
-                <img src="./assets/images/logo.svg" alt="Bot Logo">
+                <img src="https://files.catbox.moe/xdmlbg.png" alt="VIRUS BOT">
             </a>
 
             <div class="header-right">
@@ -26,10 +38,11 @@
                     <nav class="navbar" data-navbar>
                         <ul class="navbar-list">
                             <li><a href="#" class="navbar-link">Home</a></li>
-                            <li><a href="#about" class="navbar-link">About</a></li>
-                            <li><a href="#dev" class="navbar-link">Developers</a></li>
                             <li><a href="https://github.com/Hex-Byte-Glich" class="navbar-link">Github</a></li>
                             <li><a href="https://discord.gg/guccigang" class="navbar-link">Support Server</a></li>
+                            <!-- Added new categories for "Moderator" and "Welcome & Leave" -->
+                            <li><a href="#moderatorSettings" class="navbar-link">Moderator</a></li>
+                            <li><a href="#welcomeLeaveSettings" class="navbar-link">Welcome & Leave</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -53,16 +66,64 @@
             <h2>Server Settings</h2>
             <form action="/update-settings" method="POST">
                 <input type="hidden" name="guildId" value="<%= guild.id %>">
-                <div>
+
+                <!-- Bot Command Prefix -->
+                <div class="form-group">
                     <label for="serverPrefix">Bot Command Prefix:</label>
                     <input type="text" id="serverPrefix" name="prefix" value="<%= guild.prefix || '' %>">
                 </div>
-                <div>
+
+                <!-- Welcome Message -->
+                <div class="form-group">
                     <label for="welcomeMessage">Welcome Message:</label>
                     <input type="text" id="welcomeMessage" name="welcomeMessage" value="<%= guild.welcomeMessage || '' %>">
                 </div>
-                <button type="submit">Update Settings</button>
+
+                <button type="submit" class="btn btn-primary">Update Settings</button>
             </form>
+
+<!-- Welcome & Leave Settings Section -->
+<section id="welcomeLeaveSettings">
+    <h2>Welcome & Leave Settings</h2>
+    <form action="/set-welcome-leave" method="POST">
+        <input type="hidden" name="guildId" value="<%= guild.id %>">
+        
+        <!-- Welcome Channel -->
+        <div class="form-group">
+            <label for="welcomeChannel">Welcome Channel ID:</label>
+            <input type="text" id="welcomeChannel" name="welcomeChannel" 
+                   value="<%= guild.welcomeChannel || '' %>" 
+                   placeholder="Enter the channel ID">
+        </div>
+
+        <!-- Custom Welcome Message -->
+        <div class="form-group">
+            <label for="welcomeMessage">Custom Welcome Message:</label>
+            <textarea id="welcomeMessage" name="welcomeMessage" rows="4" placeholder="Enter a custom welcome message..."><%= guild.welcomeMessage || '' %></textarea>
+        </div>
+
+        <!-- Leave Channel -->
+        <div class="form-group">
+            <label for="leaveChannel">Leave Channel ID:</label>
+            <input type="text" id="leaveChannel" name="leaveChannel" 
+                   value="<%= guild.leaveChannel || '' %>" 
+                   placeholder="Enter the channel ID">
+        </div>
+
+        <!-- Custom Leave Message -->
+        <div class="form-group">
+            <label for="leaveMessage">Custom Leave Message:</label>
+            <textarea id="leaveMessage" name="leaveMessage" rows="4" placeholder="Enter a custom leave message..."><%= guild.leaveMessage || '' %></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Set Welcome & Leave Settings</button>
+    </form>
+</section>
+
+
+
+
+
         </div>
     </main>
 

@@ -1314,196 +1314,187 @@
   
   }
 
+/* General Body and Page Layout */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Container Styles for Content */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+}
+
+.logo img {
+    height: 40px;
+}
+
+.header-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar {
+    display: flex;
+}
+
+.navbar-list {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-link {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.navbar-link:hover {
+    text-decoration: underline;
+}
+
+.header-actions .btn {
+    background-color: #4A90E2;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.header-actions .btn:hover {
+    background-color: #357ABD;
+}
+
+/* Form Styling */
+form {
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
 
 h1, h2 {
     color: #333;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+/* Form Groups and Inputs */
+.form-group {
+    margin-bottom: 20px;
 }
 
-ul li {
-    margin-bottom: 10px;
+label {
+    display: block;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 5px;
 }
 
-.server-actions button {
-    background-color: #007bff;
-    color: white;
-    border: none;
+input[type="text"] {
+    width: 100%;
     padding: 10px;
-    cursor: pointer;
+    border: 1px solid #ddd;
     border-radius: 5px;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
 }
 
-.server-actions button:hover {
-    background-color: #0056b3;
+input[type="text"]:focus {
+    outline: none;
+    border-color: #4A90E2;
 }
 
-/* General Container Styling */
-
-/* Section Title */
-.h2.about-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-/* Form Styling */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-/* Category Card Styling */
-.category-card {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.category-card:hover {
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-/* Category Title Styling */
-.category-title {
-  font-size: 1.5rem;
-  color: #4A90E2;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-/* Command Card Styling */
-.command-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.command-card:hover {
-  background-color: #f0f0f0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Command Name Styling */
-.command-card h3 {
-  font-size: 1.2rem;
-  color: #333;
-  margin: 0 0 10px 0;
-}
-
-/* Command Description Styling */
-.command-card p {
-  font-size: 1rem;
-  color: #666;
-  margin: 0;
-}
-
-/* Button Styling (Optional - if you want to add a submit button) */
-
-
-.command-card button:hover {
-  background-color: #357ABD;
-}
-
-
-
-
-.containers {
-  width: 90%; /* Adjust the width as per your needs, or use 100% for full width */
-  max-width: 1200px; /* Set a max-width to prevent the form from becoming too wide on large screens */
-  margin: 0 auto; /* Center the container horizontally */
-  padding: 20px; /* Padding around the form to ensure content doesn't touch the edges */
-}
-
-/* General Container Styling */
-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
-  padding: 20px;
-}
-
-/* Server Card Styling */
-.server-card {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 250px;
-  padding: 20px;
-  transition: all 0.3s ease;
-  text-align: center;
-  border: 1px solid #ddd;
-  margin-bottom: 20px;
-  font-family: 'Arial', sans-serif;
-}
-
-.server-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Server Card Title */
-.server-card h2 {
-  font-size: 1.4rem;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-/* Server Card Paragraphs */
-.server-card p {
-  color: #666;
-  font-size: 1rem;
-  margin: 5px 0;
-}
-
-/* Server Actions Styling */
-.server-actions {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+input[type="text"]:hover {
+    border-color: #357ABD;
 }
 
 /* Button Styling */
-.server-actions button {
-  background-color: #4A90E2;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 100%;
+button, .btn-primary {
+    background-color: #4A90E2;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
 }
 
-.server-actions button:hover {
-  background-color: #357ABD;
-  transform: scale(1.05);
+button:hover, .btn-primary:hover {
+    background-color: #357ABD;
 }
 
-.server-actions button:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(72, 144, 226, 0.8);
+button:focus, .btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(72, 144, 226, 0.8);
 }
 
-/* Mobile and Responsive Adjustments */
+/* Footer Styling */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 30px 0;
+    text-align: center;
+}
+
+.footer-brand img {
+    height: 40px;
+}
+
+.footer-brand-text {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #bbb;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .server-card {
-      width: 100%;
-      max-width: 350px;
-      margin: 10px;
-  }
+    .container {
+        padding: 15px;
+    }
+
+    .navbar-list {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Style for the select dropdown */
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
+    outline: none;
+    border-color: #4A90E2;
+}
+
+select:hover {
+    border-color: #357ABD;
 }

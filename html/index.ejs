@@ -82,7 +82,7 @@
 
             <!-- Server Management Section -->
             <section class="about" id="about">
-                <div class="container">
+                <div class="containers">
                     <h2 class="h2 about-title">Manage Your Server</h2>
 
                     <!-- Server Form -->
@@ -92,16 +92,16 @@
                                 <h2><%= guild.name %></h2>
                                 <p>ID: <%= guild.id %></p>
                                 <p><%= guild.memberCount %> members</p>
-
+                    
                                 <!-- Actions for the server -->
                                 <div class="server-actions">
                                     <button type="button" onclick="sendMessage('<%= guild.id %>')">Send Test Message</button>
                                     <button type="submit" name="guildId" value="<%= guild.id %>">Manage Settings</button>
-                                    <!-- You can add other buttons or form fields for managing server settings -->
                                 </div>
                             </div>
                         <% }); %>
                     </form>
+                    
                 </div>
             </section>
 
