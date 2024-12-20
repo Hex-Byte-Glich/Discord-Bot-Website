@@ -1341,3 +1341,82 @@ button:hover {
     background-color: #0056b3;
 }
 
+/* General Container Styling */
+.container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Section Title */
+.h2.about-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Category Card Styling */
+.category-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.category-card:hover {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Category Title Styling */
+.category-title {
+  font-size: 1.5rem;
+  color: #4A90E2;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+/* Command Card Styling */
+.command-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.command-card:hover {
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Command Name Styling */
+.command-card h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+/* Command Description Styling */
+.command-card p {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Button Styling (Optional - if you want to add a submit button) */
+
+
+button:hover {
+  background-color: #357ABD;
+}

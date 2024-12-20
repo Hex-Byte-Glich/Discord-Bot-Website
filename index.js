@@ -32,11 +32,6 @@ const twitchStreamUrl = 'https://www.twitch.tv/loadingbotfun';
 
 client.on('ready', async () => {
     console.log(`${client.user.tag} is online!`);
-    //surpriseDrop.startAutoDrops(client);
-    //client.user.setPresence({
-        //status: 'invisible', // This sets the bot to appear offline
-        //activities: [] // No activities to display
-    //});
 
     // Function to set presence with dynamic server and member counts
     async function updatePresence() {
@@ -79,7 +74,7 @@ client.login(process.env.TOKEN_BOT);
 
 client.commands = new Collection();
 
-const commandFolderPath = path.join(__dirname, 'CommandSlash');
+const commandFolderPath = path.join(__dirname, './CommandSlash');
 
 // Dynamically load command files from the slashCommands folder
 fs.readdirSync(commandFolderPath).forEach(file => {
@@ -133,6 +128,24 @@ app.use(express.urlencoded({ extended: true }));
 client.once('ready', () => {
     //console.log(`Logged in as ${client.user.tag}`);
 
+    const botCategories = [
+        {
+            name: "General Commands",
+            commands: [
+                { name: "!help", description: "Displays a list of available commands" },
+                { name: "!ping", description: "Ping the bot to check latency" },
+                { name: "!info", description: "Shows information about the bot" }
+            ]
+        },
+        {
+            name: "Moderation Commands",
+            commands: [
+                { name: "!ban", description: "Bans a user from the server" },
+                { name: "!kick", description: "Kicks a user from the server" }
+            ]
+        }
+    ];
+
     // Define the root route
     app.get('/', (req, res) => {
         const guilds = client.guilds.cache.map(guild => ({
@@ -142,7 +155,7 @@ client.once('ready', () => {
         }));
 
         
-        res.render('index', { clientUserTag: client.user.tag, guilds: guilds });
+        res.render('index', { clientUserTag: client.user.tag, guilds: guilds, botCategories });
     });
 
 
@@ -177,6 +190,15 @@ client.once('ready', () => {
         res.render('manage-server', { guild });
     });
 
+
+   app.post('/manage-commands', (req, res) => {
+    const commandName = req.body.commandName;
+    console.log(`Managing command: ${commandName}`);
+    // You can add logic here to manage the selected command
+    res.redirect('/');
+})
+    
+
     app.get('/manage-server/:guildId', (req, res) => {
         const guildId = req.params.guildId;
         const guild = client.guilds.cache.get(guildId);
@@ -198,7 +220,7 @@ client.once('ready', () => {
             return res.status(404).send('Guild not found');
         }
     
-        // Save the settings in memory (or save to a database)
+        // Save the settings in memory (you can modify this to store in a database or cache)
         guildSettings[guildId] = {
             prefix: prefix || guildSettings[guildId]?.prefix,
             welcomeMessage: welcomeMessage || guildSettings[guildId]?.welcomeMessage
@@ -208,6 +230,7 @@ client.once('ready', () => {
         console.log(`Prefix: ${prefix}`);
         console.log(`Welcome Message: ${welcomeMessage}`);
     
+        // Redirect to the manage-server page
         res.redirect(`/manage-server/${guildId}`);
     });
 
