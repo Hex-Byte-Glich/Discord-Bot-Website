@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Server - <%= guild.name %></title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <a href="#" class="logo">
+                <img src="./assets/images/logo.svg" alt="Bot Logo">
+            </a>
+
+            <div class="header-right">
+                <div class="header-nav-wrapper">
+                    <button class="navbar-toggle-btn" data-navbar-toggle-btn>
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+
+                    <nav class="navbar" data-navbar>
+                        <ul class="navbar-list">
+                            <li><a href="#" class="navbar-link">Home</a></li>
+                            <li><a href="#about" class="navbar-link">About</a></li>
+                            <li><a href="#dev" class="navbar-link">Developers</a></li>
+                            <li><a href="https://github.com/Hex-Byte-Glich" class="navbar-link">Github</a></li>
+                            <li><a href="https://discord.gg/guccigang" class="navbar-link">Support Server</a></li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="header-actions">
+                    <form action="https://discord.com/oauth2/authorize?client_id=1319324599732666408&permissions=1103169542&integration_type=0&scope=bot">
+                        <button class="btn btn-primary">Invite</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <h1>Manage Server: <%= guild.name %></h1>
+            <p>Server ID: <%= guild.id %></p>
+            <p>Member Count: <%= guild.memberCount %></p>
+
+            <h2>Server Settings</h2>
+            <form action="/update-settings" method="POST">
+                <input type="hidden" name="guildId" value="<%= guild.id %>">
+                <div>
+                    <label for="serverPrefix">Bot Command Prefix:</label>
+                    <input type="text" id="serverPrefix" name="prefix" value="<%= guild.prefix || '' %>">
+                </div>
+                <div>
+                    <label for="welcomeMessage">Welcome Message:</label>
+                    <input type="text" id="welcomeMessage" name="welcomeMessage" value="<%= guild.welcomeMessage || '' %>">
+                </div>
+                <button type="submit">Update Settings</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <img src="./assets/images/logo.svg" alt="Bot Logo">
+                    </a>
+                    <p class="footer-brand-text">
+                        Best bot for your server. Add it and experience the difference.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

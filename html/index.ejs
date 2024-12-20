@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="https://cdn.statically.io/img/fancyodds.com/wp-content/uploads/2022/01/Anime-Girl-Pfp-Cute-Hot-Red-Dress-Anime-Girl-PFP.png" type="image/x-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Ionicons (for icons) -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body id="top">
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <a href="#" class="logo">
+                <img src="./assets/images/logo.svg" alt="Bot Logo">
+            </a>
+
+            <div class="header-right">
+                <div class="header-nav-wrapper">
+                    <button class="navbar-toggle-btn" data-navbar-toggle-btn>
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+
+                    <nav class="navbar" data-navbar>
+                        <ul class="navbar-list">
+                            <li><a href="#" class="navbar-link">Home</a></li>
+                            <li><a href="#about" class="navbar-link">About</a></li>
+                            <li><a href="#dev" class="navbar-link">Developers</a></li>
+                            <li><a href="https://github.com/Hex-Byte-Glich" class="navbar-link">Github</a></li>
+                            <li><a href="https://discord.gg/guccigang" class="navbar-link">Support Server</a></li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="header-actions">
+                    <form action="https://discord.com/oauth2/authorize?client_id=1319324599732666408&permissions=1103169542&integration_type=0&scope=bot">
+                        <button class="btn btn-primary">Invite</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <article>
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-content">
+                        <h1 class="h1 hero-title">Welcome to the Bot Dashboard</h1>
+                        <!--<p class="hero-text">Logged in as <strong><%= clientUserTag %></strong></p> -->
+                       <!-- <p>Currently managing <strong><%= guilds.length %></strong> servers</p>-->
+
+                        <div class="btn-group">
+                            <form action="https://discord.com/oauth2/authorize?client_id=1319324599732666408&permissions=1103169542&integration_type=0&scope=bot">
+                                <button class="btn btn-primary">Invite</button>
+                            </form>
+                            <form action="https://discord.gg/guccigang">
+                                <button class="btn btn-secondary">Join Server</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <figure class="hero-banner">
+                        <img src="https://cdn.statically.io/img/fancyodds.com/wp-content/uploads/2022/01/Anime-Girl-Pfp-Cute-Hot-Red-Dress-Anime-Girl-PFP.png" alt="nft art">
+                    </figure>
+                </div>
+            </section>
+
+            <!-- Server Management Section -->
+            <section class="about" id="about">
+                <div class="container">
+                    <h2 class="h2 about-title">Manage Your Server</h2>
+
+                    <!-- Server Form -->
+                    <form action="/manage-server" method="POST">
+                        <% guilds.forEach(function(guild) { %>
+                            <div class="server-card">
+                                <h2><%= guild.name %></h2>
+                                <p>ID: <%= guild.id %></p>
+                                <p><%= guild.memberCount %> members</p>
+
+                                <!-- Actions for the server -->
+                                <div class="server-actions">
+                                    <button type="button" onclick="sendMessage('<%= guild.id %>')">Send Test Message</button>
+                                    <button type="submit" name="guildId" value="<%= guild.id %>">Manage Settings</button>
+                                    <!-- You can add other buttons or form fields for managing server settings -->
+                                </div>
+                            </div>
+                        <% }); %>
+                    </form>
+                </div>
+            </section>
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <img src="./assets/images/logo.svg" alt="Bot Logo">
+                    </a>
+                    <p class="footer-brand-text">
+                        Best bot for your server. Add it and experience the difference.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Go To Top Button -->
+    <a href="#top" class="go-top" data-go-top>
+        <ion-icon name="arrow-up-outline"></ion-icon>
+    </a>
+
+    <script>
+        "use strict";
+
+        // Toggle function for elements
+        const elemToggleFunc = function (elem) { elem.classList.toggle("active"); }
+
+        // Navbar toggle
+        const navbar = document.querySelector("[data-navbar]");
+        const navbarToggleBtn = document.querySelector("[data-navbar-toggle-btn]");
+        navbarToggleBtn.addEventListener("click", function () { elemToggleFunc(navbar); });
+
+        // Go to top button functionality
+        const goTopBtn = document.querySelector("[data-go-top]");
+        window.addEventListener("scroll", function () {
+            if (this.window.scrollY >= 800) {
+                goTopBtn.classList.add("active");
+            } else {
+                goTopBtn.classList.remove("active");
+            }
+        });
+
+        // Send Test Message function
+        function sendMessage(guildId) {
+            fetch('/send-message/' + guildId)
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => alert('Error: ' + error));
+        }
+    </script>
+
+</body>
+
+</html>
