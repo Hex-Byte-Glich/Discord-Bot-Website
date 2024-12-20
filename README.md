@@ -1,3 +1,3 @@
 # Discord-Bot-Website
 
-`` npm install ``
+# install nodejs `` npm install ``
