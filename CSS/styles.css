@@ -1328,7 +1328,7 @@ ul li {
     margin-bottom: 10px;
 }
 
-button {
+.server-actions button {
     background-color: #007bff;
     color: white;
     border: none;
