@@ -6,7 +6,11 @@
 # step 2:
 ``
 @TOKEN NEED TO CHANGE OF YOURSEFT
-{ TOKEN = '' }
+{ 
+TOKEN = '',
+APPLIACTION_ID= ''
+DEVID= ''
+}
 ``
 
 
