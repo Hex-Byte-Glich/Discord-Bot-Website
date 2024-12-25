@@ -12,7 +12,8 @@ APPLIACTION_ID= '',
 DEVID= ''
 }
 ``
-
+# Donate :
+``donate me and you get a full file``
 
 # MORE UPDATE :
 `` My Team Will Update This more. Enjoying for this and music and database game update soon.``
