@@ -4,7 +4,7 @@ const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 module.exports = {
     name: 'kick',
     aliases: ['k'],
-    description: 'Kick the user with a warning',
+    description: 'Kick the user with a warning. [Administrator]',
     async execute(client, message, args) {
         try {
            

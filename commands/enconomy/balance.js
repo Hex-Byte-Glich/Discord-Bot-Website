@@ -1,5 +1,6 @@
 const { getUser } = require('../../msc/functions');
 const { EmbedBuilder } = require('discord.js');
+const { description } = require('../info/clear_message');
 const sym = '`';
 // Assuming developers list is declared elsewhere, like in a config file
 const developers = ['DEV ID'];
@@ -7,6 +8,7 @@ const developers = ['DEV ID'];
 module.exports = {
     name: 'balance',
     aliases: ['money', 'cash'],
+    description: 'Shows the balance of the user',
     async execute(client, message, args) {
         try {
             const userId = message.author.id;

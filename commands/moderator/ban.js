@@ -4,7 +4,7 @@ const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 module.exports = {
     name: 'ban',
     aliases: ['b'],
-    description: 'ban the user out from guild',
+    description: 'ban the user out from guild. [Administrator]',
     async execute(client, message, args) {
         try {
            

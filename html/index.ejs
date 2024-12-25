@@ -105,30 +105,32 @@
                 </div>
             </section>
 
-            <!-- Server Command Section -->
-            <section class="about" id="command">
-                <div class="container">
-                    <h2 class="h2 about-title">Bot Commands</h2>
-                    
-                    <!-- Bot Commands Form -->
-                    <form action="/manage-commands" method="POST">
+    <!-- Bot Commands -->
+    <section class="about" id="command">
+        <div class="container">
+            <h2 class="h2 about-title">Bot Commands</h2>
+
+            <!-- Bot Commands Form -->
+            <form action="/manage-commands" method="POST">
+                
+                <!-- Loop through botCategories -->
+                <% botCategories.forEach(function(category) { %> 
+                    <div class="category-card">
+                        <h2 class="category-title"><%= category.name %></h2>
                         
-                        <% botCategories.forEach(function(category) { %> 
-                            <div class="category-card">
-                                <h2 class="category-title"><%= category.name %></h2>
-                                
-                                <!-- Loop through commands within the current category -->
-                                <% category.commands.forEach(function(command) { %>
-                                    <div class="command-card">
-                                        <h3><%= command.name %></h3>
-                                        <p><%= command.description %></p>
-                                    </div>
-                                <% }); %>
+                        <!-- Loop through commands within the current category -->
+                        <p><%= category.commands.length %> commands</p> <!-- Debugging line -->
+                        <% category.commands.forEach(function(command) { %>
+                            <div class="command-card">
+                                <h3><%= command.name %></h3>
+                                <p><%= command.description %></p>
                             </div>
                         <% }); %>
-                    </form>
-                </div>
-            </section>
+                    </div>
+                <% }); %>
+            </form>
+        </div>
+    </section>
 
             <section class="top-seller" id="dev">
                 <div class="container">

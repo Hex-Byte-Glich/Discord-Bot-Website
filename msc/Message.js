@@ -25,7 +25,10 @@ try {
             getCore,
             getSlashCommands,
             getModerator,
-            getEnconomy
+            getEnconomy,
+            getAdmin,
+            getInfo
+            
         } = require('./Message_Handle');
 
         client.on('messageCreate', async (message) => {
@@ -104,7 +107,7 @@ try {
             }
             if (!userData.username) { userData.username = `${message.author.username}`; };
 
-            if (commandName == 'leaveserver') {
+            if (commandName == 'add' || commandName == 'serverlist') {
 
                 const admin = getAdmin.get(commandName) || getAdmin.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
                 if (!admin) return;
@@ -128,7 +131,7 @@ try {
 
                 Core.execute(client, message, args);
                 return;
-            } else if (commandName == 'kick') {
+            } else if (commandName == 'kick' || commandName == 'ban' || commandName == 'unban') {
 
                 const Moderator = getModerator.get(commandName) || getModerator.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
                 if (!Moderator) return;
@@ -136,12 +139,20 @@ try {
                 Moderator.execute(client, message, args);
                 return;
 
-            } else if (commandName == 'balance') {
+            } else if (commandName == 'balance' || commandName == 'give') {
 
                 const Enconomy = getEnconomy.get(commandName) || getEnconomy.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
                 if (!Enconomy) return;
 
                 Enconomy.execute(client, message, args);
+                return;
+            
+            } else if (commandName == 'clear' || commandName == 'serverinfo' || commandName == 'member' || commandName == 'role') {
+
+                const Info = getInfo.get(commandName) || getInfo.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+                if (!Info) return;
+
+                Info.execute(client, message, args);
                 return;
             
             }

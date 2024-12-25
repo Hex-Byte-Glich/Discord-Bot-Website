@@ -3,7 +3,7 @@ const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 module.exports = {
     name: 'unbans',
     aliases: ['unbs'],
-    description: 'Unban users in the guild',
+    description: 'Unban users in the guild. [Administrator]',
     async execute(client, message, args) {
         try {
             

@@ -4,37 +4,42 @@ const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 module.exports = {
     name: 'unban',
     aliases: ['unb'],
-    description: 'unban the user from guild',
+    description: 'Unban the user from the guild. [Administrator]',
     async execute(client, message, args) {
         try {
-           
+            // Check if the user has permission to ban members
             if (!message.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-                return interaction.reply({ content: 'You do not have permission to ban members!', ephemeral: true });
-              }
+                return message.reply({ content: 'You do not have permission to unban members!', ephemeral: true });
+            }
 
-            const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
-            if (!member) {
-                return message.channel.send('Please mention a valid user to ban or provide their ID.');
+            // Extract userId from command arguments (expecting the user ID to be provided)
+            const userId = args[0];
+            if (!userId) {
+                return message.reply('Please provide the user ID to unban.');
             }
 
             try {
+                // Try fetching the banned user by ID
                 const bannedUser = await message.guild.bans.fetch(userId);
                 if (!bannedUser) {
                     return message.channel.send('No user found with that ID in the ban list.');
                 }
 
-            await message.guild.members.unban(userId);
+                // Unban the user
+                await message.guild.members.unban(userId);
 
-            const banEmbed = new EmbedBuilder()
-                .setColor('#FFFF00') // Red color
-                .setTitle('User Unbanned')
-                .setDescription(`${bannedUser.user.tag} has been unbanned from the server.`)
-                .addFields(
-                    { name: 'unbanned by', value: message.author.tag },
-                    { name: 'Reason', value: 'Unbanned by an admin' }
-                )
-                .setTimestamp();
+                // Create the embed to notify about the unban
+                const unbanEmbed = new EmbedBuilder()
+                    .setColor('#FFFF00') // Yellow color for unban
+                    .setTitle('User Unbanned')
+                    .setDescription(`${bannedUser.user.tag} has been unbanned from the server.`)
+                    .addFields(
+                        { name: 'Unbanned by', value: message.author.tag },
+                        { name: 'Reason', value: 'Unbanned by an admin' }
+                    )
+                    .setTimestamp();
 
+                // Send the embed to the channel
                 message.channel.send({ embeds: [unbanEmbed] });
 
             } catch (error) {

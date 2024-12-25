@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -73,7 +71,7 @@
                     <input type="text" id="welcomeMessage" name="welcomeMessage" value="<%= guild.welcomeMessage || '' %>">
                 </div>
 
-                <button type="submit" class="btn btn-primary">Update Settings</button>
+                <button type="submit" class="btn btn-primary">SetUp</button>
             </form>
 
             <!-- Welcome & Leave Settings Section -->
@@ -114,17 +112,17 @@
                 </form>
             </section>
 
-
+<!-- autorolesettings Section -->
             <section id="autorolesettings">
-                <h2>AutoRole</h2>
+                <h2>AutoRole Member</h2>
                 <form action="/autorole-update" method="POST" id="autoroleForm">
                     <input type="hidden" name="guildId" value="<%= guild.id %>">
                     
                     <!-- Autorole Section -->
                     <div class="form-group">
-                        <label for="autoRole">Select a role: </label>
+                        <label for="autoRole">Select a role member: </label>
                         <select id="autoRole" name="autoRole">
-                            <option value="">Select a role</option>
+                            <option value="">Select a role member</option>
                             <% guild.roles.cache.forEach(role => { %> <!-- Correct usage of forEach -->
                                 <option value="<%= role.id %>" <%= role.id === guild.autoRole ? 'selected' : '' %> >
                                     <%= role.name %>
@@ -142,7 +140,36 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </section>
-            
+
+<!-- autorolesettings Section -->
+<section id="autorolebotsettings">
+    <h2>AutoRole Bot</h2>
+    <form action="/autorole-update-bot" method="POST" id="autorolebotForm">
+        <input type="hidden" name="guildId" value="<%= guild.id %>">
+        
+        <!-- Autorole Section -->
+        <div class="form-group">
+            <label for="autoRolebot">Select a role member: </label>
+            <select id="autoRolebot" name="autoRolebot">
+                <option value="">Select a role bot</option>
+                <% guild.roles.cache.forEach(role => { %>
+                    <option value="<%= role.id %>" <%= role.id === guild.autoRolebot ? 'selected' : '' %> >
+                        <%= role.name %>
+                    </option>
+                <% }) %>
+            </select>
+            <button type="button" id="addRoleBotBtn">Add Role</button>
+        </div>
+
+        <!-- Selected Roles Display Section -->
+        <div id="selectedRolesContainers">
+            <!-- Dynamically added roles will appear here -->
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</section>
+
             
         </div>
     </main>
@@ -214,6 +241,57 @@
                 alert('Please select a role');
             }
         });
+
+        document.getElementById('addRoleBotBtn').addEventListener('click', function() {
+    const selectElement = document.getElementById('autoRolebot');
+    const selectedRoleId = selectElement.value;
+    const selectedRoleName = selectElement.options[selectElement.selectedIndex].text;
+
+    // Check if a role is selected
+    if (selectedRoleId) {
+        const roleContainer = document.createElement('div');
+        roleContainer.classList.add('selected-role');
+
+        // Create a span to show the role name
+        const roleName = document.createElement('span');
+        roleName.textContent = selectedRoleName;
+
+        // Create the close button (X)
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'X';
+        closeBtn.classList.add('close-btn');
+        closeBtn.addEventListener('click', function() {
+            roleContainer.remove();
+            // Also remove the corresponding hidden input field
+            const hiddenInput = document.getElementById('role_' + selectedRoleId);
+            if (hiddenInput) {
+                hiddenInput.remove();
+            }
+        });
+
+        // Append the role name and close button to the container
+        roleContainer.appendChild(roleName);
+        roleContainer.appendChild(closeBtn);
+
+        // Append the container to the selected roles display area
+        document.getElementById('selectedRolesContainers').appendChild(roleContainer);
+
+        // Add a hidden input field for the role to be submitted with the form
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'selectedRoles[]'; // This will be an array of selected roles
+        hiddenInput.value = selectedRoleId;
+        hiddenInput.id = 'role_' + selectedRoleId;
+
+        // Append the hidden input to the form
+        document.getElementById('autorolebotForm').appendChild(hiddenInput);
+
+        // Optionally reset the select dropdown to its default state
+        selectElement.value = '';
+    } else {
+        alert('Please select a role');
+    }
+});
     
         // Disable the "X" button functionality on form submit to keep selected roles
         document.getElementById('autoroleForm').addEventListener('submit', function(event) {
@@ -223,7 +301,38 @@
                 button.disabled = false;
             });
         });
+
     </script>
+
+<script>
+    "use strict";
+
+    // Toggle function for elements
+    const elemToggleFunc = function (elem) { elem.classList.toggle("active"); }
+
+    // Navbar toggle
+    const navbar = document.querySelector("[data-navbar]");
+    const navbarToggleBtn = document.querySelector("[data-navbar-toggle-btn]");
+    navbarToggleBtn.addEventListener("click", function () { elemToggleFunc(navbar); });
+
+    // Go to top button functionality
+    const goTopBtn = document.querySelector("[data-go-top]");
+    window.addEventListener("scroll", function () {
+        if (this.window.scrollY >= 800) {
+            goTopBtn.classList.add("active");
+        } else {
+            goTopBtn.classList.remove("active");
+        }
+    });
+
+    // Send Test Message function
+    function sendMessage(guildId) {
+        fetch('/send-message/' + guildId)
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => alert('Error: ' + error));
+    }
+</script>
     
     <style>
         /* Style for the role container */
@@ -306,6 +415,25 @@
         }
     
         #addRoleBtn:active {
+            background-color: #388e3c;
+        }
+
+        #addRoleBotBtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 14px;
+        }
+
+        #addRoleBotBtn:hover {
+            background-color: #45a049;
+        }
+    
+        #addRoleBotBtn:active {
             background-color: #388e3c;
         }
     
