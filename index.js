@@ -320,6 +320,11 @@ app.get('/manage-server/:guildId', async (req, res) => {
     });
     
     client.on('guildMemberAdd', member => {
+
+        if (member.user.bot) {
+            return;
+        }
+        
         const guildId = member.guild.id;
         const settings = guildSettingsd[guildId];  // Assuming guildSettingsd contains the settings
     
