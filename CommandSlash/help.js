@@ -1,4 +1,8 @@
-
+const { prefix } = require('../data/config.json');
+const fs = require('fs');
+const path = require('path');
+const { EmbedBuilder } = require('discord.js');
+const sym = '`';
 
 module.exports = {
     name: 'help',
@@ -6,21 +10,50 @@ module.exports = {
     description: 'Commands Help',
     execute: async (interaction) => {
         try {
-            // Get the user from the interaction
-            const user = interaction.user;  
+            // Function to recursively load command files from all folders and subfolders
+            const loadCommands = (dir) => {
+                const commandFiles = fs.readdirSync(dir);
+                let commands = [];
 
-            // List of commands
-            const commands = [
-                { name: '!ping', description: 'Responds with "Pong!"' },
-                { name: '!help', description: 'Displays this help message' },
-                // Add more commands here as needed
-            ];
+                for (const file of commandFiles) {
+                    const fullPath = path.join(dir, file);
+                    const stat = fs.statSync(fullPath);
 
-            // Construct the help message
-            const helpMessage = `**${user.username}'s Commands:**\n${commands.map(cmd => `- **${cmd.name}**: ${cmd.description}`).join('\n')}`;
+                    // If it's a directory, recurse into it
+                    if (stat.isDirectory()) {
+                        commands = commands.concat(loadCommands(fullPath));
+                    } else if (file.endsWith('.js')) {
+                        // If it's a JavaScript file, require the command and add it to the list
+                        const command = require(fullPath);
+                        commands.push({ name: `${prefix}${command.name}`, description: command.description });
+                    }
+                }
 
-            // Send the help message in response to the interaction
-            await interaction.reply(helpMessage);
+                return commands;
+            };
+
+            // Load all commands from the 'commands' folder (and its subfolders)
+            const commands = loadCommands(path.join(__dirname, '../commands'));
+
+            // Create the embed with the commands list
+            const embed = new EmbedBuilder()
+                .setColor('#FFFF00')
+                .setTitle(`${interaction.client.user.username}'s Commands`)
+                .setDescription('Here are all the commands you can use:')
+                .setTimestamp()
+                .setFooter({ text: 'Use the commands with the prefix !' });
+
+            // Add each command to the embed as a field
+            commands.forEach(command => {
+                embed.addFields({
+                    name: `${sym}${command.name}${sym}`,
+                    value: `${command.description}`,
+                    inline: false
+                });
+            });
+
+            // Respond to the interaction with the embed
+            await interaction.reply({ embeds: [embed] });
         } catch (error) {
             console.error('Error fetching user data:', error);
             await interaction.reply('An error occurred while fetching the help information. Please try again later.');

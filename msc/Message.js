@@ -1,6 +1,10 @@
 try {
-    const { PermissionsBitField,EmbedBuilder,ButtonBuilder } = require('discord.js');
+    const { PermissionsBitField } = require('discord.js');
+    const mongoose = require('mongoose');
+    const { userSchema } = require('../users/user');
+    const User = mongoose.model('User', userSchema);
 
+    const { getUser } = require('./functions');
     require('dotenv').config();
     const config = require('../data/config.json');
     const fs = require('fs');
@@ -19,7 +23,9 @@ try {
 
         const { 
             getCore,
-            getSlashCommands
+            getSlashCommands,
+            getModerator,
+            getEnconomy
         } = require('./Message_Handle');
 
         client.on('messageCreate', async (message) => {
@@ -50,19 +56,6 @@ try {
             } else if (!botMember.permissionsIn(message.channel).has(PermissionsBitField.Flags.ReadMessageHistory)) {
                 return;
             }
-            
-            function hasRequiredPermissions(member, channel) {
-                const requiredPermissions = [
-                    PermissionsBitField.Flags.SendMessages,
-                    PermissionsBitField.Flags.ManageMessages,
-                    PermissionsBitField.Flags.EmbedLinks,
-                    PermissionsBitField.Flags.AttachFiles,
-                    PermissionsBitField.Flags.AddReactions,
-                    PermissionsBitField.Flags.ReadMessageHistory
-                ];
-                const botPermissions = member.permissionsIn(channel);
-                return requiredPermissions.every(perm => botPermissions.has(perm));
-            }
 
             const userId = message.author.id;
             const content = message.content;
@@ -73,7 +66,6 @@ try {
 
             messageCache[userId].push({ content, timestamp: Date.now() });
             messageCache[userId] = messageCache[userId].filter(msg => msg.timestamp > Date.now() - TIME_WINDOW);
-            const similarMessages = messageCache[userId].filter(msg => msg.content === content).length;
 
             const currentTime = new Date().getTime();
             if (!userFirstCommandTimes.has(userId)) {
@@ -102,6 +94,16 @@ try {
             const args = messageContent.slice(actualPrefix.length).trim().split(/ +/);
             let commandName = args.shift().toLowerCase();
 
+            let userData = await getUser(message.author.id);
+            if (!userData) {
+                userData = new User({
+                    userId: message.author.id,
+                    balance: 50000
+                });
+                await userData.save();
+            }
+            if (!userData.username) { userData.username = `${message.author.username}`; };
+
             if (commandName == 'leaveserver') {
 
                 const admin = getAdmin.get(commandName) || getAdmin.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
@@ -119,16 +121,30 @@ try {
                     return;
                 }
 
-            }else if (commandName == 'help' || commandName == 'ping') {
+            } else if (commandName == 'help' || commandName == 'ping') {
 
                 const Core = getCore.get(commandName) || getCore.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
                 if (!Core) return;
 
                 Core.execute(client, message, args);
                 return;
-            }
+            } else if (commandName == 'kick') {
+
+                const Moderator = getModerator.get(commandName) || getModerator.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+                if (!Moderator) return;
+
+                Moderator.execute(client, message, args);
+                return;
+
+            } else if (commandName == 'balance') {
+
+                const Enconomy = getEnconomy.get(commandName) || getEnconomy.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+                if (!Enconomy) return;
+
+                Enconomy.execute(client, message, args);
+                return;
             
-                
+            }
         });
 
         client.on('interactionCreate', async (interaction) => {

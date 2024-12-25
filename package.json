@@ -2,6 +2,7 @@
   "dependencies": {
     "@discordjs/builders": "^1.9.0",
     "@discordjs/rest": "^2.4.0",
+    "body-parser": "^1.20.3",
     "discord-api-types": "^0.37.112",
     "discord-hybrid-sharding": "^2.2.3",
     "discord.js": "^14.16.3",
@@ -10,6 +11,7 @@
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "init": "^0.1.2",
+    "mongoose": "^8.9.2",
     "path": "^0.12.7"
   }
 }

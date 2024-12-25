@@ -1326,7 +1326,7 @@ body, html {
 }
 
 /* Container Styles for Content */
-.container {
+.containers {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;

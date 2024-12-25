@@ -41,8 +41,8 @@
                             <li><a href="https://github.com/Hex-Byte-Glich" class="navbar-link">Github</a></li>
                             <li><a href="https://discord.gg/guccigang" class="navbar-link">Support Server</a></li>
                             <!-- Added new categories for "Moderator" and "Welcome & Leave" -->
-                            <li><a href="#moderatorSettings" class="navbar-link">Moderator</a></li>
                             <li><a href="#welcomeLeaveSettings" class="navbar-link">Welcome & Leave</a></li>
+                            <li><a href="#autorolesettings" class="navbar-link">AutoRole</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -58,7 +58,7 @@
 
     <!-- Main Content -->
     <main>
-        <div class="container">
+        <div class="containers">
             <h1>Manage Server: <%= guild.name %></h1>
             <p>Server ID: <%= guild.id %></p>
             <p>Member Count: <%= guild.memberCount %></p>
@@ -67,63 +67,83 @@
             <form action="/update-settings" method="POST">
                 <input type="hidden" name="guildId" value="<%= guild.id %>">
 
-                <!-- Bot Command Prefix -->
-                <div class="form-group">
-                    <label for="serverPrefix">Bot Command Prefix:</label>
-                    <input type="text" id="serverPrefix" name="prefix" value="<%= guild.prefix || '' %>">
-                </div>
-
                 <!-- Welcome Message -->
                 <div class="form-group">
-                    <label for="welcomeMessage">Welcome Message:</label>
+                    <label for="welcomeMessage">Announcement Message:</label>
                     <input type="text" id="welcomeMessage" name="welcomeMessage" value="<%= guild.welcomeMessage || '' %>">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Update Settings</button>
             </form>
 
-<!-- Welcome & Leave Settings Section -->
-<section id="welcomeLeaveSettings">
-    <h2>Welcome & Leave Settings</h2>
-    <form action="/set-welcome-leave" method="POST">
-        <input type="hidden" name="guildId" value="<%= guild.id %>">
-        
-        <!-- Welcome Channel -->
-        <div class="form-group">
-            <label for="welcomeChannel">Welcome Channel ID:</label>
-            <input type="text" id="welcomeChannel" name="welcomeChannel" 
-                   value="<%= guild.welcomeChannel || '' %>" 
-                   placeholder="Enter the channel ID">
-        </div>
-
-        <!-- Custom Welcome Message -->
-        <div class="form-group">
-            <label for="welcomeMessage">Custom Welcome Message:</label>
-            <textarea id="welcomeMessage" name="welcomeMessage" rows="4" placeholder="Enter a custom welcome message..."><%= guild.welcomeMessage || '' %></textarea>
-        </div>
-
-        <!-- Leave Channel -->
-        <div class="form-group">
-            <label for="leaveChannel">Leave Channel ID:</label>
-            <input type="text" id="leaveChannel" name="leaveChannel" 
-                   value="<%= guild.leaveChannel || '' %>" 
-                   placeholder="Enter the channel ID">
-        </div>
-
-        <!-- Custom Leave Message -->
-        <div class="form-group">
-            <label for="leaveMessage">Custom Leave Message:</label>
-            <textarea id="leaveMessage" name="leaveMessage" rows="4" placeholder="Enter a custom leave message..."><%= guild.leaveMessage || '' %></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Set Welcome & Leave Settings</button>
-    </form>
-</section>
-
-
+            <!-- Welcome & Leave Settings Section -->
+            <section id="welcomeLeaveSettings">
+                <h2>Welcome & Leave Settings</h2>
+                <form action="/set-welcome-leave" method="POST">
+                    <input type="hidden" name="guildId" value="<%= guild.id %>">
+                    
+                    <!-- Welcome Channel -->
+                    <div class="form-group">
+                        <label for="welcomeChannel">Welcome Channel ID: [ note: it not work auto when the bot is offline ]</label>
+                        <input type="text" id="welcomeChannel" name="welcomeChannel" 
+                               value="<%= guild.welcomeChannel || '' %>" 
+                               placeholder="Enter the channel ID">
+                    </div>
+                    
+                    <!-- Custom Welcome Message -->
+                    <div class="form-group">
+                        <label for="welcomeMessage">Custom Welcome Message:</label>
+                        <textarea id="welcomeMessage" name="welcomeMessage" rows="4" placeholder="Enter a custom welcome message..."><%= guild.welcomeMessage || '' %></textarea>
+                    </div>
+            
+                    <!-- Leave Channel -->
+                    <div class="form-group">
+                        <label for="leaveChannel">Leave Channel ID: [ note: it not work auto when the bot is offline ]</label>
+                        <input type="text" id="leaveChannel" name="leaveChannel" 
+                               value="<%= guild.leaveChannel || '' %>" 
+                               placeholder="Enter the channel ID">
+                    </div>
+            
+                    <!-- Custom Leave Message -->
+                    <div class="form-group">
+                        <label for="leaveMessage">Custom Leave Message:</label>
+                        <textarea id="leaveMessage" name="leaveMessage" rows="4" placeholder="Enter a custom leave message..."><%= guild.leaveMessage || '' %></textarea>
+                    </div>
+            
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </section>
 
 
-
+            <section id="autorolesettings">
+                <h2>AutoRole</h2>
+                <form action="/autorole-update" method="POST" id="autoroleForm">
+                    <input type="hidden" name="guildId" value="<%= guild.id %>">
+                    
+                    <!-- Autorole Section -->
+                    <div class="form-group">
+                        <label for="autoRole">Select a role: </label>
+                        <select id="autoRole" name="autoRole">
+                            <option value="">Select a role</option>
+                            <% guild.roles.cache.forEach(role => { %> <!-- Correct usage of forEach -->
+                                <option value="<%= role.id %>" <%= role.id === guild.autoRole ? 'selected' : '' %> >
+                                    <%= role.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                        <button type="button" id="addRoleBtn">Add Role</button>
+                    </div>
+            
+                    <!-- Selected Roles Display Section -->
+                    <div id="selectedRolesContainer">
+                        <!-- Dynamically added roles will appear here -->
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </section>
+            
+            
         </div>
     </main>
 
@@ -133,7 +153,7 @@
             <div class="container">
                 <div class="footer-brand">
                     <a href="#" class="logo">
-                        <img src="./assets/images/logo.svg" alt="Bot Logo">
+                        <img src="https://files.catbox.moe/xdmlbg.png" alt="Bot Logo">
                     </a>
                     <p class="footer-brand-text">
                         Best bot for your server. Add it and experience the difference.
@@ -143,6 +163,157 @@
         </div>
     </footer>
 
+    <script>
+        document.getElementById('addRoleBtn').addEventListener('click', function() {
+            const selectElement = document.getElementById('autoRole');
+            const selectedRoleId = selectElement.value;
+            const selectedRoleName = selectElement.options[selectElement.selectedIndex].text;
+    
+            // Check if a role is selected
+            if (selectedRoleId) {
+                const roleContainer = document.createElement('div');
+                roleContainer.classList.add('selected-role');
+        
+                // Create a span to show the role name
+                const roleName = document.createElement('span');
+                roleName.textContent = selectedRoleName;
+        
+                // Create the close button (X)
+                const closeBtn = document.createElement('button');
+                closeBtn.textContent = 'X';
+                closeBtn.classList.add('close-btn');
+                closeBtn.addEventListener('click', function() {
+                    roleContainer.remove();
+                    // Also remove the corresponding hidden input field
+                    const hiddenInput = document.getElementById('role_' + selectedRoleId);
+                    if (hiddenInput) {
+                        hiddenInput.remove();
+                    }
+                });
+        
+                // Append the role name and close button to the container
+                roleContainer.appendChild(roleName);
+                roleContainer.appendChild(closeBtn);
+        
+                // Append the container to the selected roles display area
+                document.getElementById('selectedRolesContainer').appendChild(roleContainer);
+        
+                // Add a hidden input field for the role to be submitted with the form
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'selectedRoles[]'; // This will be an array of selected roles
+                hiddenInput.value = selectedRoleId;
+                hiddenInput.id = 'role_' + selectedRoleId;
+        
+                // Append the hidden input to the form
+                document.getElementById('autoroleForm').appendChild(hiddenInput);
+        
+                // Optionally reset the select dropdown to its default state
+                selectElement.value = '';
+            } else {
+                alert('Please select a role');
+            }
+        });
+    
+        // Disable the "X" button functionality on form submit to keep selected roles
+        document.getElementById('autoroleForm').addEventListener('submit', function(event) {
+            // Temporarily disable the close button functionality during form submission
+            const closeBtns = document.querySelectorAll('.close-btn');
+            closeBtns.forEach(function(button) {
+                button.disabled = false;
+            });
+        });
+    </script>
+    
+    <style>
+        /* Style for the role container */
+        .selected-role {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Style for the role name text */
+        .selected-role span {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-right: 15px;
+            flex-grow: 1;
+            text-transform: capitalize;
+        }
+        
+        /* Style for the remove (close) button */
+        .close-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Hover effect for the close button */
+        .close-btn:hover {
+            background-color: #e60000;
+        }
+        
+        /* Hover effect for the close button (active state) */
+        .close-btn:active {
+            background-color: #b30000;
+        }
+        
+        /* Styles for the select dropdown and Add Role button */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+    
+        #autoRole {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    
+        #addRoleBtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 14px;
+        }
+    
+        #addRoleBtn:hover {
+            background-color: #45a049;
+        }
+    
+        #addRoleBtn:active {
+            background-color: #388e3c;
+        }
+    
+    </style>
+    
+
 </body>
+
+
 
 </html>
