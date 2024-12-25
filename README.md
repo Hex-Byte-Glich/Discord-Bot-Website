@@ -16,7 +16,7 @@ DEVID= ''
 ``
 donate me and you get a full file,
 store_anonymous: https://t.me/ZuesMid2 ,
-contact to me: https://t.me/ZuesMid
+contact to me discord username: mullercrist
 ``
 
 # MORE UPDATE :
